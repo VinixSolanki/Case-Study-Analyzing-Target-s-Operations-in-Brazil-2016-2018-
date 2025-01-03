@@ -365,6 +365,7 @@ from analyzing.orders
 
 ### **Actionable Insights & Recommendations (10 points)**
 Actionable Insights
+
 Marketing Focus
 States like SP and RJ exhibit high order volumes and significant customer engagement. Continuing and expanding marketing campaigns in these regions is essential for sustained revenue growth.
 States like RR and AP have minimal engagement, signaling untapped potential. Targeted campaigns such as discounts or exclusive deals in these regions could increase customer base and order frequency.
@@ -388,7 +389,11 @@ Proactively gathering feedback through surveys or loyalty programs can identify 
 Expanding Efficient Models
 States like SP and RJ with early delivery and lower freight costs should serve as benchmarks. Insights from these regions can be applied to optimize operations in slower-performing areas.
 
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Recommendations
+
+
 Expand Presence in Untapped Regions
 Focus on underperforming states like RR and AP through targeted marketing campaigns and establishing local warehouses.
 
