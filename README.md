@@ -101,11 +101,10 @@ As a data analyst/scientist at Target, your task is to analyze the dataset to ex
 
 2. Data type of all columns in the "customers" table.
    - **Answer:**
+  - Using the query: 
     ```sql
-   - SELECT column_name, data_type
-FROM INFORMATION_SCHEMA.COLUMNS
-WHERE table_schema = 'customers';
-```
+    SELECT column_name, data_type FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'customers';
+    ```
      - The `customers.csv` file contains columns such as `customer_id` (string), `customer_unique_id` (string), `customer_zip_code_prefix` (integer), `customer_city` (string), and `customer_state` (string).
 
 3. Get the time range between which the orders were placed.
@@ -122,8 +121,7 @@ from analyzing.orders
      - Using the query:  
        ```sql
        SELECT COUNT(DISTINCT geolocation_city) AS "Number of Cities",
-       COUNT(DISTINCT geolocation_state) AS "Number of States"
-FROM analyzing.geolocation;
+       COUNT(DISTINCT geolocation_state) AS "Number of States" FROM analyzing.geolocation;
 
        ```
      - Insights: There were **400+ unique cities** and **27 states** involved in placing orders during the given period.
@@ -133,34 +131,23 @@ FROM analyzing.geolocation;
    - **Answer:**
      - Using the query:  
        ```sql
-       SELECT EXTRACT(YEAR FROM order_purchase_timestamp) AS
-Order_Year,
-EXTRACT(MONTH FROM order_purchase_timestamp) AS
-Order_Month,COUNT(order_id) AS Number_of_Orders
-From analyzing.orders
-GROUP BY Order_Year,Order_Month
-ORDER BY Order_Year,Order_Month
-       ```
+       SELECT EXTRACT(YEAR FROM order_purchase_timestamp) AS Order_Year, EXTRACT(MONTH FROM order_purchase_timestamp) AS Order_Month,COUNT(order_id) AS Number_of_Orders From analyzing.orders GROUP BY Order_Year,Order_Month ORDER BY Order_Year,Order_Month
+
+        ```     
      - Insights: There was a steady increase in the number of orders from 2016 to 2017. A peak was observed in late 2017, followed by a decline in 2018.
 
 2. Detect any monthly seasonality in the number of orders.
    - **Answer:**
      - Using the query:  
        ```sql
-      select Order_year,Order_Month,Number_of_Orders,
-ntile(5) over(order by Number_of_orders desc) as
-Months_Seasonality
-from
-(SELECT EXTRACT(YEAR FROM order_purchase_timestamp) AS
-Order_Year,
-EXTRACT(MONTH FROM order_purchase_timestamp) AS
-Order_Month,COUNT(order_id) AS Number_of_Orders
-from analyzing.orders
-GROUP BY order_year,order_month
-ORDER BY order_year,order_month) tbl
-order by Number_of_Orders desc;
-
-       ```
+        select Order_year,Order_Month,Number_of_Orders,ntile(5) over(order by Number_of_orders desc) as Months_Seasonality from
+        (SELECT EXTRACT(YEAR FROM order_purchase_timestamp) AS
+         Order_Year,
+        EXTRACT(MONTH FROM order_purchase_timestamp) AS
+       Order_Month,COUNT(order_id) AS Number_of_Orders
+       from analyzing.orders
+       GROUP BY order_year,order_month
+       ORDER BY order_year,order_month) tbl order by Number_of_Orders desc; ```
      - Insights: November consistently showed high order volumes, indicating seasonal peaks. January through March were relatively low.
 
 3. Determine the time of day when Brazilian customers mostly place orders (Dawn, Morning, Afternoon, or Night).
@@ -168,16 +155,16 @@ order by Number_of_Orders desc;
      - Using the query:  
        ```sql
        SELECT 	
-	CASE
+        CASE
 		WHEN EXTRACT(HOUR FROM order_purchase_timestamp) BETWEEN 0 AND 6 THEN 'DAWN 0-6'
         WHEN EXTRACT(HOUR FROM order_purchase_timestamp) BETWEEN 7 AND 12 THEN 'MORNING 7-12'
         WHEN EXTRACT(HOUR FROM order_purchase_timestamp) BETWEEN 13 AND 18 THEN 'AFTERNOON 13-18'
         WHEN EXTRACT(HOUR FROM order_purchase_timestamp) BETWEEN 19 AND 23 THEN 'NIGHT 19-23'
-	END AS Order_time_of_day,
-    count(*) as Number_of_orders
-    from analyzing.orders
-group by Order_time_of_day     
-order by Order_time_of_day
+       END AS Order_time_of_day,
+       count(*) as Number_of_orders
+       from analyzing.orders 
+       group by Order_time_of_day     
+       order by Order_time_of_day
    
     
        ```
@@ -189,11 +176,11 @@ order by Order_time_of_day
      - Using the query:  
        ```sql
        select c.customer_state, 
-	extract(Year from o.order_purchase_timestamp) as Order_year, extract(Month from o.order_purchase_timestamp) as Order_month, count(o.order_id) as Number_of_orders
-    from analyzing.orders o join analyzing.customers c
-    on o.customer_id=c.customer_id 
-    group by c.customer_state,Order_year, Order_month
-    order by c.customer_state,Order_year, Order_month
+        extract(Year from o.order_purchase_timestamp) as Order_year, extract(Month from o.order_purchase_timestamp) as Order_month, count(o.order_id) as Number_of_orders
+       from analyzing.orders o join analyzing.customers c
+       on o.customer_id=c.customer_id 
+       group by c.customer_state,Order_year, Order_month
+       order by c.customer_state,Order_year, Order_month
        ```
      - Insights: SP consistently showed the highest number of orders monthly, while smaller states like RR had minimal orders. Seasonal spikes in November were observed across most states.
 
@@ -201,9 +188,9 @@ order by Order_time_of_day
    - **Answer:**
      - Using the query:  
        ```sql
-      select customer_state, count(customer_id) as number_of_customers from analyzing.customers
-group by customer_state
-order by number_of_customers desc
+        select customer_state, count(customer_id) as number_of_customers from analyzing.customers
+       group by customer_state
+       order by number_of_customers desc
        ```
      - Insights: State SP has the maximum number of customers, capturing nearly 40% of the customer base. States like RR and AP showed minimal engagement, indicating potential areas for growth and targeted campaigns.
 
@@ -212,15 +199,15 @@ order by number_of_customers desc
    - **Answer:**
      - Using the query:  
        ```sql
-     SELECT 
-    c.customer_state, 
-    CAST(ROUND(SUM(oi.price), 0) AS FLOAT) AS total_order_price, 
-    CAST(ROUND(AVG(oi.price), 0) AS FLOAT ) AS avg_order_price
-from analyzing.customers c
-join analyzing.orders o on c.customer_id=o.customer_id 
-join analyzing.order_items oi on o.order_id=oi.order_id
-group by c.customer_state
-order by c.customer_state
+       SELECT 
+       c.customer_state, 
+       CAST(ROUND(SUM(oi.price), 0) AS FLOAT) AS total_order_price, 
+       CAST(ROUND(AVG(oi.price), 0) AS FLOAT ) AS avg_order_price
+       from analyzing.customers c
+       join analyzing.orders o on c.customer_id=o.customer_id 
+       join analyzing.order_items oi on o.order_id=oi.order_id
+       group by c.customer_state
+       order by c.customer_state
        ```
      - Insights: Freight costs account for nearly 20% of the total transaction value. This suggests a need for freight optimization strategies to improve profit margins.
 
@@ -229,19 +216,19 @@ order by c.customer_state
      - Using the query:  
        ```sql
        with y17 as (
-select round (sum(p.payment_value)) as cost_of_2017 from analyzing.orders as o join analyzing.payments as p
-on p.order_id=o.order_id
-where extract(year from o.order_purchase_timestamp) = 2017 AND extract(month from o.order_purchase_timestamp) BETWEEN 1 AND 8
-),
- y18 as (
-select round (sum(p.payment_value)) as cost_of_2018 from analyzing.orders as o join analyzing.payments as p
-on p.order_id=o.order_id
-where extract(year from o.order_purchase_timestamp) = 2018 AND extract(month from o.order_purchase_timestamp) BETWEEN 1 AND 8
-)
-SELECT  y17.cost_of_2017,
-    y18.cost_of_2018, concat(ROUND(((y18.cost_of_2018 - y17.cost_of_2017) / y17.cost_of_2017) * 100), 
+       select round (sum(p.payment_value)) as cost_of_2017 from analyzing.orders as o join analyzing.payments as p
+       on p.order_id=o.order_id
+       where extract(year from o.order_purchase_timestamp) = 2017 AND extract(month from o.order_purchase_timestamp) BETWEEN 1 AND 8
+       ),
+       y18 as (
+       select round (sum(p.payment_value)) as cost_of_2018 from analyzing.orders as o join analyzing.payments as p
+       on p.order_id=o.order_id
+       where extract(year from o.order_purchase_timestamp) = 2018 AND extract(month from o.order_purchase_timestamp) BETWEEN 1 AND 8
+       )
+       SELECT  y17.cost_of_2017,
+       y18.cost_of_2018, concat(ROUND(((y18.cost_of_2018 - y17.cost_of_2017) / y17.cost_of_2017) * 100), 
         '%') AS Percentage_Increase
-	 from y17, y18
+	   from y17, y18
        ```
      - Insights: The cost of orders increased by 137% between Jan-Aug 2017 and Jan-Aug 2018. This growth highlights the effectiveness of marketing strategies and expanding customer adoption of e-commerce.
 
@@ -249,13 +236,13 @@ SELECT  y17.cost_of_2017,
    - **Answer:**
      - Using the query:  
        ```sql
-      SELECT c.customer_state, 
-    CAST(ROUND(SUM(oi.freight_value), 0) AS FLOAT) AS total_freight_value, 
-    CAST(ROUND(AVG(oi.freight_value), 0) AS FLOAT) AS avg_freight_value
-FROM analyzing.customers c JOIN analyzing.orders o  ON c.customer_id = o.customer_id 
-JOIN analyzing.order_items oi ON o.order_id = oi.order_id
-GROUP BY c.customer_state
-ORDER BY c.customer_state;
+        SELECT c.customer_state, 
+       CAST(ROUND(SUM(oi.freight_value), 0) AS FLOAT) AS total_freight_value, 
+       CAST(ROUND(AVG(oi.freight_value), 0) AS FLOAT) AS avg_freight_value
+       FROM analyzing.customers c JOIN analyzing.orders o  ON c.customer_id = o.customer_id 
+       JOIN analyzing.order_items oi ON o.order_id = oi.order_id
+       GROUP BY c.customer_state
+       ORDER BY c.customer_state;
 
        ```
      - Insights: States like PB have the highest average order prices, indicating strong purchasing power. SP has the highest order volumes but lower average prices, reflecting its broader demographic and affordability.
@@ -266,9 +253,9 @@ ORDER BY c.customer_state;
      - Using the query:  
        ```sql
        SELECT order_id, datediff(order_delivered_customer_date,order_purchase_timestamp) AS Time_to_deliver_days,
-datediff(order_estimated_delivery_date,order_delivered_customer_date) AS diff_estimated_delivery
-from analyzing.orders
-order by order_id
+       datediff(order_estimated_delivery_date,order_delivered_customer_date) AS diff_estimated_delivery
+       from analyzing.orders
+       order by order_id
  
        ```
      - Insights: Several regions reported significant delays, especially in rural areas. Efficient urban logistics hubs outperformed, delivering closer to or earlier than estimated dates.
@@ -278,7 +265,7 @@ order by order_id
      - Using the query:  
        ```sql
        with ranked_data as (
-	select 
+	   select 
 		c.customer_state,round(AVG(oi.freight_value)) as avg_freight_value, ROW_NUMBER() OVER (ORDER BY AVG(oi.freight_value) DESC) AS rank_high,
         ROW_NUMBER() OVER (ORDER BY AVG(oi.freight_value) asc) AS rank_low
         from analyzing.customers c
@@ -288,13 +275,13 @@ order by order_id
         c.customer_state
         )
         select  rd_high.customer_state AS highest_state,
-    rd_high.avg_freight_value AS highest_avg_freight,
-    rd_low.customer_state AS lowest_state, 
-    rd_low.avg_freight_value AS lowest_avg_freight
-    from ranked_data rd_high
-    JOIN ranked_data rd_low ON rd_high.rank_high = rd_low.rank_low
-    WHERE rd_high.rank_high <= 5
-    ORDER BY rd_high.rank_high;
+        rd_high.avg_freight_value AS highest_avg_freight,
+        rd_low.customer_state AS lowest_state, 
+       rd_low.avg_freight_value AS lowest_avg_freight
+       from ranked_data rd_high
+       JOIN ranked_data rd_low ON rd_high.rank_high = rd_low.rank_low
+       WHERE rd_high.rank_high <= 5
+       ORDER BY rd_high.rank_high;
         
         
        ```
@@ -304,27 +291,27 @@ order by order_id
    - **Answer:**
      - Using the query:  
        ```sql
-      WITH delivery_data AS (
-    SELECT customer_id,DATEDIFF(order_delivered_customer_date, order_purchase_timestamp) AS delivery_time
-    FROM analyzing.orders
-),
-ranked_data AS (
-    SELECT 
+       WITH delivery_data AS (
+       SELECT customer_id,DATEDIFF(order_delivered_customer_date, order_purchase_timestamp) AS delivery_time
+       FROM analyzing.orders
+       ),
+       ranked_data AS (
+       SELECT 
         c.customer_state, 
         ROUND(AVG(d.delivery_time)) AS avg_delivery_time,
         ROW_NUMBER() OVER (ORDER BY ROUND(AVG(d.delivery_time)) DESC) AS rank_high,
         ROW_NUMBER() OVER (ORDER BY ROUND(AVG(d.delivery_time)) ASC) AS rank_low
-    FROM analyzing.customers c JOIN delivery_data d ON c.customer_id = d.customer_id
-    GROUP BY c.customer_state
-)
-SELECT 
-    rd_high.customer_state AS highest_state,
-    rd_high.avg_delivery_time AS highest_avg_delivery_time,
-    rd_low.customer_state AS lowest_state,
-    rd_low.avg_delivery_time AS lowest_avg_delivery_time
-FROM ranked_data rd_high JOIN ranked_data rd_low ON rd_high.rank_high = rd_low.rank_low
-WHERE rd_high.rank_high <= 5
-ORDER BY rd_high.rank_high;
+       FROM analyzing.customers c JOIN delivery_data d ON c.customer_id = d.customer_id
+       GROUP BY c.customer_state
+       )
+       SELECT 
+       rd_high.customer_state AS highest_state,
+       rd_high.avg_delivery_time AS highest_avg_delivery_time,
+       rd_low.customer_state AS lowest_state,
+       rd_low.avg_delivery_time AS lowest_avg_delivery_time
+       FROM ranked_data rd_high JOIN ranked_data rd_low ON rd_high.rank_high = rd_low.rank_low
+       WHERE rd_high.rank_high <= 5
+       ORDER BY rd_high.rank_high;
 
        ```
      - Insights: States with high delivery times require improved warehousing and transportation networks. Low-performing states like RR can learn from faster delivery models seen in SP.
@@ -334,16 +321,16 @@ ORDER BY rd_high.rank_high;
      - Using the query:  
        ```sql
        WITH cte AS (
-    SELECT 
+       SELECT 
         customer_id, order_id, DATEDIFF(order_estimated_delivery_date, order_delivered_customer_date) AS diff_estimated_delivery
-    FROM analyzing.orders
-    WHERE order_delivered_customer_date IS NOT NULL AND order_status = 'delivered'
-)
-SELECT c.customer_state, ROUND(AVG(ct.diff_estimated_delivery), 1) AS avg_delivery_time_day
-FROM cte ct JOIN analyzing.customers c ON c.customer_id = ct.customer_id
-GROUP BY c.customer_state
-ORDER BY avg_delivery_time_day ASC
-LIMIT 5;
+       FROM analyzing.orders
+       WHERE order_delivered_customer_date IS NOT NULL AND order_status = 'delivered'
+       )
+       SELECT c.customer_state, ROUND(AVG(ct.diff_estimated_delivery), 1) AS avg_delivery_time_day
+       FROM cte ct JOIN analyzing.customers c ON c.customer_id = ct.customer_id
+       GROUP BY c.customer_state
+       ORDER BY avg_delivery_time_day ASC
+       LIMIT 5;
 
        ```
      - Insights: Efficient delivery practices in states like SP and RJ should be analyzed and replicated to improve logistics across all regions.
@@ -353,13 +340,13 @@ LIMIT 5;
    - **Answer:**
      - Using the query:  
        ```sql
-      SELECT extract(YEAR FROM order_purchase_timestamp) AS Order_year,
-extract(MONTH From order_purchase_timestamp) as Order_month,
-p.payment_type as Payment_method, count(p.order_id) as Number_of_orders 
-from analyzing.orders o join analyzing.payments p
-on o.order_id=p.order_id
-group by Order_year,Order_month,Payment_method
-order by Order_year,Order_month,Payment_method
+       SELECT extract(YEAR FROM order_purchase_timestamp) AS Order_year,
+       extract(MONTH From order_purchase_timestamp) as Order_month,
+       p.payment_type as Payment_method, count(p.order_id) as Number_of_orders 
+       from analyzing.orders o join analyzing.payments p
+       on o.order_id=p.order_id
+       group by Order_year,Order_month,Payment_method
+       order by Order_year,Order_month,Payment_method
        ```
      - Insights: Credit cards dominate payment methods, with a slight seasonal uptick in installment-based options during high-demand periods.
 
@@ -368,10 +355,10 @@ order by Order_year,Order_month,Payment_method
      - Using the query:  
        ```sql
        SELECT payment_installments, 
-    COUNT(order_id) AS Number_of_orders FROM analyzing.payments
-WHERE payment_installments >= 1
-GROUP BY payment_installments
-ORDER BY payment_installments;
+       COUNT(order_id) AS Number_of_orders FROM analyzing.payments
+       WHERE payment_installments >= 1
+       GROUP BY payment_installments
+       ORDER BY payment_installments;
 
        ```
      - Insights: Single-installment payments are preferred, accounting for 80% of orders. This suggests a low dependency on credit, with customers opting for straightforward transactions.
